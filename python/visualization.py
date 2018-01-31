@@ -232,6 +232,12 @@ def microphone_update(audio_samples):
             r_curve.setData(y=led.pixels[0])
             g_curve.setData(y=led.pixels[1])
             b_curve.setData(y=led.pixels[2])
+            # add LED strip simulation
+            for i in range(num_pix):
+                pix=led.pixels[:,i]
+                r1 = vb.allChildren()[i +1]
+                r1.setBrush(pg.mkBrush(pix[0], pix[1], pix[2]))
+
     if config.USE_GUI:
         app.processEvents()
     
@@ -350,7 +356,19 @@ if __name__ == '__main__':
         layout.addItem(energy_label)
         layout.addItem(scroll_label)
         layout.addItem(spectrum_label)
+        # add LED strip simulation
+        layout.nextRow()
+        vb = layout.addViewBox(colspan=3)
+        vb.setMaximumHeight(30)
+        num_pix = led.pixels.shape[1]
+        pix_wid = 1.0 / num_pix 
+        for i in range(num_pix):
+            r1 = pg.QtGui.QGraphicsRectItem(i*pix_wid, 0, pix_wid, .1)
+            r1.setPen(pg.mkPen(None))
+            vb.addItem(r1)
+
     # Initialize LEDs
     led.update()
     # Start listening to live audio stream
     microphone.start_stream(microphone_update)
+
